@@ -7,8 +7,8 @@ describe "Testeando la primera parte" {
 
     const beneficio1 = new BeneficioEspecial(tipo="Traslados privados", costo=5000, estaVigente=true)
     const beneficio2 = new BeneficioEspecial(tipo="Acceso a salas VIP",costo=7000,estaVigente=true)
-    const rolGuia = new Guia()
-    const coordinador1 = new Coordinador(cantidadViajesRealizados=5,estaMotivado=true,aniosExperiencia=7,rol=rolGuia)
+    const coordinador1 = new Coordinador(cantidadViajesRealizados=5,estaMotivado=true,aniosExperiencia=7,rol=guia1)
+    const guia1 = new Guia()
     const pack1 = new PackNacional(provinciaDestino="Salta", duracionDias=5, precioBase=300000,coordinador=coordinador1)
     const packInter1 = new PackInternacional(duracionDias=5,precioBase=1000000,coordinador=coordinador1,paisDestino="Polonia",cantidadEscalas=5,lugarDeInteres=true)
   test "Un pack nacional sin beneficios vigentes devuelve el mismo precio base" {
@@ -22,5 +22,33 @@ describe "Testeando la primera parte" {
 
   test "Un pack internacional sin beneficios vigentes calcula correctamente el total con el 20% de recargo" {
     assert.equals(1200000,packInter1.valorFinal())
+  }
+}
+
+describe "Testeando la segunda parte" {
+    const guiaMotivado = new Coordinador(cantidadViajesRealizados=21,estaMotivado=true,aniosExperiencia=7,rol=new Guia())
+    const acompaniante = new Coordinador(cantidadViajesRealizados=26,estaMotivado=false,aniosExperiencia=1,rol=new Acompaniante())
+    const asistente = new Coordinador(cantidadViajesRealizados=45,estaMotivado=true,aniosExperiencia=2,rol=new AsistenteLogistico())
+  test "Un guía motivado con 21 viajes realizados es considerado altamente calificado." {
+    assert.that(guiaMotivado.estaAltamenteCalificado())
+  }
+
+  test "Un asistente logístico con menos de 3 años de experiencia no es calificado, aunque tenga muchos viajes. " {
+    assert.notThat(asistente.estaAltamenteCalificado())
+  }
+  test "Un acompañante con cualquier cantidad de viajes es siempre calificado si supera los 20." {
+    assert.that(acompaniante.estaAltamenteCalificado())
+  }
+}
+
+describe "Testeando tercera parte" {
+  const guiaMotivado = new Coordinador(cantidadViajesRealizados=21,estaMotivado=true,aniosExperiencia=7,rol=new Guia())
+    const packNacional = new PackNacional(provinciaDestino="Salta",duracionDias=15,coordinador=guiaMotivado,precioBase=500000)
+    const packInternacional = new PackInternacional(paisDestino="Polonia",cantidadEscalas=5,lugarDeInteres=true,duracionDias=25,precioBase=2000000,coordinador=guiaMotivado)
+  test "Un pack nacional es premium" {
+    assert.that(packNacional.esPremium())
+  }
+  test "Un pack internacional no es premium por tener mas de una escala" {
+    assert.notThat(packInternacional.esPremium())
   }
 }
